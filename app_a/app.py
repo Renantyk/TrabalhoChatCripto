@@ -4,6 +4,7 @@ import os
 from rsa import RSA
 from threading import Thread
 import threading
+from sha256 import SHA256
 
 
 app = Flask(__name__)
@@ -24,6 +25,12 @@ def receber():
     with open("app_a/keys/chave_privada.txt", "r") as f:
         chave_privada = f.read()
     dados = request.get_json()
+    sha = SHA256(dados["mensagem"])
+    hashreceber = sha.criptografar()
+    
+    if (dados["hash"] != hashreceber):
+        return{"Mensagem alterada"}
+    
     criptografada = dados["mensagem"]
     msg = rsa.descriptografar(criptografada, chave_privada)
     chat_log.append(f"Remoto: {msg}")
@@ -37,8 +44,12 @@ def enviar():
         texto = input("Você: ")
         chat_log.append(f"Você: {texto}")
         criptografada = rsa.criptografar(texto, chave_publica_dest)
-        requests.post("http://localhost:5001/receber", json={"mensagem": criptografada})
-        print("mensagem enviada")
+        hashenvio = SHA256(texto)
+        hashenvio = hashenvio.criptografar()
+        requests.post("http://localhost:5001/receber", json={"mensagem": criptografada,
+                                                             "hash": hashenvio})
+        #print("mensagem enviada")
+        print(f"msg criptografada: {criptografada}")
 
 @app.route("/receberpublic", methods=["POST"])
 def receberpublica():
