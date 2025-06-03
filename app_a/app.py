@@ -25,14 +25,15 @@ def receber():
     with open("app_a/keys/chave_privada.txt", "r") as f:
         chave_privada = f.read()
     dados = request.get_json()
-    sha = SHA256(dados["mensagem"])
+    criptografada = dados["mensagem"]
+    msg = rsa.descriptografar(criptografada, chave_privada)
+    sha = SHA256(msg)
     hashreceber = sha.criptografar()
     
     if (dados["hash"] != hashreceber):
         return{"Mensagem alterada"}
     
-    criptografada = dados["mensagem"]
-    msg = rsa.descriptografar(criptografada, chave_privada)
+   
     chat_log.append(f"Remoto: {msg}")
     print("\n".join(chat_log))
     return {"status": "Recebido"}, 200
