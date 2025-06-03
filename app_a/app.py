@@ -13,7 +13,7 @@ chat_log = []
 
 
 if not os.path.exists("app_a/keys/chave_privada.txt"):
-    rsa_criar = rsa.criar_chaves(True)
+    rsa_criar = rsa.criar_chaves()
     requests.post("http://localhost:5001/receberpublic", json={"chave_publica": rsa_criar["public_key"]})
 
     with open("app_a/keys/chave_privada.txt", "w") as f:

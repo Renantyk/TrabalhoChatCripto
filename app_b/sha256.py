@@ -1,7 +1,5 @@
 import sympy as sy
 import math as mt
-from bitarray import bitarray
-
 
 class SHA256():
     
